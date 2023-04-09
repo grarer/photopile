@@ -29,13 +29,4 @@ import { RootPage } from './ui/root';
  */
 
 
-
-console.log('👋 This message is being logged by "renderer.js", included via webpack');
-
-const container = document.getElementById('root');
-
-// Create a root.
-const root = ReactDOMClient.createRoot(container);
-
-// Initial render: Render an element to the root.
-root.render(RootPage());
+const root = ReactDOMClient.createRoot(document.getElementById('root')).render(RootPage());
