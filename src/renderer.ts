@@ -1,3 +1,5 @@
+import * as ReactDOMClient from 'react-dom/client';
+import { RootPage } from './ui/root';
 /**
  * This file will automatically be loaded by webpack and run in the "renderer" context.
  * To learn more about the differences between the "main" and the "renderer" context in
@@ -26,6 +28,14 @@
  * ```
  */
 
-import './index.css';
+
 
 console.log('👋 This message is being logged by "renderer.js", included via webpack');
+
+const container = document.getElementById('root');
+
+// Create a root.
+const root = ReactDOMClient.createRoot(container);
+
+// Initial render: Render an element to the root.
+root.render(RootPage());
