@@ -1,14 +1,15 @@
 import { dialog } from "electron";
 import { Category, IFileManager, FileReference, MoveFileRequest, NextFileResponse, SelectedDirectoryResponse } from "../model";
 import * as fs from 'node:fs/promises';
+import * as fsExtra from 'fs-extra';
 
 export class FileManager implements IFileManager {
 
     private lastOpenedDirectoryPath: string | undefined = undefined;
 
-    public getLastOpenedDirectoryPath(): string | undefined {
-        return this.lastOpenedDirectoryPath 
-    };
+    public isInOpenedDirectory(absolutePath: string): boolean {
+        return this.lastOpenedDirectoryPath !== undefined && absolutePath.startsWith(this.lastOpenedDirectoryPath);
+    }
 
     public async getSelectedDirectoryAndExistingCategories(): Promise<SelectedDirectoryResponse> {
 
@@ -37,8 +38,27 @@ export class FileManager implements IFileManager {
 
     public async moveFile(request: MoveFileRequest): Promise<void> {
         const oldAbsolutePath = request.workingDirectoryAbsolutePath + "/" + request.oldFileName;
-        const newAbsolutePath = request.category.absolutePath + "/" + request.newFileName;
-        await fs.rename(oldAbsolutePath, newAbsolutePath);
+        const destinationFolder = request.category.absolutePath;
+        const newAbsolutePath = destinationFolder + "/" + request.newFileName;
+
+        // validate source and destination are in the allowed directory
+        if (!this.isInOpenedDirectory(oldAbsolutePath)) {
+            throw new Error(`Source file path ${oldAbsolutePath} is not in the opened directory ${this.lastOpenedDirectoryPath}`);
+        } else if (!this.isInOpenedDirectory(newAbsolutePath)) {
+            throw new Error(`Destination file path ${newAbsolutePath} is not in the opened directory ${this.lastOpenedDirectoryPath}`);
+        }
+
+        // create the destination directory if it doesn't exist
+        await fs.mkdir(destinationFolder, { recursive: true });
+
+        try {
+            await fsExtra.move(oldAbsolutePath, newAbsolutePath, { overwrite: false });
+        } catch (e) {
+            if (e instanceof Error && e.message.includes("dest already exists")) {
+                throw new Error(`File named ${request.newFileName} already exists in category ${request.category.name}`);
+            }
+            throw e;
+        }
     }
 
     private async readCategories(workingDirectoryAbsolutePath: string, maxRecursionDepth = 3): Promise<Category[]> {

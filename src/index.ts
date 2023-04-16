@@ -42,16 +42,12 @@ app.on('ready', () => {
   ipcMain.handle(ChannelNames.moveFile, (event, request) => fileManager.moveFile(request));
 
   protocol.registerFileProtocol('pilefile', (request, callback) => {
-    const allowedDirectory = fileManager.getLastOpenedDirectoryPath();
     const absolutePath = request.url.slice('pilefile://'.length);
-
-    if (allowedDirectory === undefined) {
-      console.warn(`Rejected file request ${request.url} because no directory is selected yet`);
-    } else if (!absolutePath.startsWith(allowedDirectory)) {
-      console.warn(`Rejected file request ${request.url} because it is not in the allowed directory ${allowedDirectory}`)
-    } else {
+    if (fileManager.isInOpenedDirectory(absolutePath)) {
       const filePath = url.fileURLToPath('file://' + absolutePath)
       callback(filePath)
+    } else {
+      console.warn(`Rejected file request ${request.url} because it is not in the opened directory`);
     }
   });
 
