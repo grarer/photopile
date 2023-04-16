@@ -41,14 +41,19 @@ app.on('ready', () => {
   ipcMain.handle(ChannelNames.getNextFileAndFileCount, (event, workingDirectoryAbsolutePath: string) => fileManager.getNextFileAndFileCount(workingDirectoryAbsolutePath));
   ipcMain.handle(ChannelNames.moveFile, (event, request) => fileManager.moveFile(request));
 
-  protocol.registerFileProtocol('atom', (request, callback) => {
-    // TODO restrict to only allow files in the opened directory
-    console.log("atom protocol request: " + request.url);
-    const filePath = url.fileURLToPath('file://' + request.url.slice('atom://'.length))
-    console.log("resolved atom protocol request to: " + filePath);
-    callback(filePath)
+  protocol.registerFileProtocol('pilefile', (request, callback) => {
+    const allowedDirectory = fileManager.getLastOpenedDirectoryPath();
+    const absolutePath = request.url.slice('pilefile://'.length);
+
+    if (allowedDirectory === undefined) {
+      console.warn(`Rejected file request ${request.url} because no directory is selected yet`);
+    } else if (!absolutePath.startsWith(allowedDirectory)) {
+      console.warn(`Rejected file request ${request.url} because it is not in the allowed directory ${allowedDirectory}`)
+    } else {
+      const filePath = url.fileURLToPath('file://' + absolutePath)
+      callback(filePath)
+    }
   });
-  console.log("registered atom protocol");
 
   // start window
   createWindow();

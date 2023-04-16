@@ -100,7 +100,7 @@ export function SortPage(props: {
             handleError={props.handleError}/>
             </div>
             <div style={{width: "calc(100% - 20px)", height: "calc(100% - 130px)", margin: "auto", marginTop: "0px", marginBottom: "10px"}}>
-                <img src={`atom://${currentImageState.fileAbsolutePath}`} style={{objectFit: "contain", width: "100%", height: "100%",}}></img>
+                <img src={`pilefile://${currentImageState.fileAbsolutePath}`} style={{objectFit: "contain", width: "100%", height: "100%",}}></img>
             </div>
         </div>
     </>);

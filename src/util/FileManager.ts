@@ -3,6 +3,13 @@ import { Category, IFileManager, FileReference, MoveFileRequest, NextFileRespons
 import * as fs from 'node:fs/promises';
 
 export class FileManager implements IFileManager {
+
+    private lastOpenedDirectoryPath: string | undefined = undefined;
+
+    public getLastOpenedDirectoryPath(): string | undefined {
+        return this.lastOpenedDirectoryPath 
+    };
+
     public async getSelectedDirectoryAndExistingCategories(): Promise<SelectedDirectoryResponse> {
 
         // get the user's selected directory
@@ -14,9 +21,8 @@ export class FileManager implements IFileManager {
             throw new Error("No directory selected");
         }
         const directoryAbsolutePath = result.filePaths[0];
+        this.lastOpenedDirectoryPath = directoryAbsolutePath;
         var categories = await this.readCategories(directoryAbsolutePath);
-
-
 
         return {workingDirectoryAbsolutePath: directoryAbsolutePath, existingCategories: categories};
 
