@@ -18,11 +18,13 @@ type CurrentImageState = {
 }
 
 function createCategory(workingDirectory: SelectedDirectoryResponse, categoryPath: string): Category {
-    // TODO throw for paths starting or ending in slashes
     // normalize the path
-    var normalizedPath = categoryPath.replace(/\\/g, "/").split("/").filter(p => p !== "").join("/");
+    var normalizedPath = categoryPath.replace(/\\/g, "/").split("/").filter(p => p !== "").join("/").trim();
     var categoryAbsolutePath = workingDirectory.workingDirectoryAbsolutePath + "/" + normalizedPath;
-    return { name: categoryPath, absolutePath: categoryAbsolutePath };
+    if (normalizedPath === "") {
+        throw new Error("Invalid category path");
+    }
+    return { name: normalizedPath, absolutePath: categoryAbsolutePath };
 }
 
 

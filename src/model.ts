@@ -8,7 +8,6 @@ export type SelectedDirectoryResponse = {
     existingCategories: Category[],
 }
 
-// TODO include a way to display the file contents
 export type FileReference = {
     originalName: string,
     absolutePath: string,
