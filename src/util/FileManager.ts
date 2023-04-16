@@ -21,7 +21,7 @@ export class FileManager implements IFileManager {
         const result = await dialog.showOpenDialog({
             properties: ['openDirectory'],
         });
-        console.log(result);
+
         if (result.filePaths.length === 0) {
             throw new Error("No directory selected");
         }

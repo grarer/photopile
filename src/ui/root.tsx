@@ -1,10 +1,15 @@
 import { useState } from "react";
 import { IFileManager, SelectedDirectoryResponse, windowFileManagerKey } from "../model";
-import { SnackbarProvider, enqueueSnackbar } from 'notistack'
 import { ThemeProvider } from "@emotion/react";
 import { Paper, createTheme } from "@mui/material";
 import { SortPage } from "./sortPage";
 import { StartPage } from "./startPage";
+import '@fontsource/roboto/300.css';
+import '@fontsource/roboto/400.css';
+import '@fontsource/roboto/500.css';
+import '@fontsource/roboto/700.css';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const darkTheme = createTheme({
   palette: {
@@ -23,9 +28,6 @@ export function RootWrapper(): JSX.Element {
 export function RootPage(): JSX.Element {
   var [directorySelection, setDirectorySelection] = useState<SelectedDirectoryResponse | undefined>();
 
-  console.log(directorySelection);
-
-  // TODO error popup should use sans-serif font
   function showErrorMessage(error: unknown): void {
     console.error(error);
     var message = error instanceof Error ? error.message : `${error}`;
@@ -35,17 +37,27 @@ export function RootPage(): JSX.Element {
       var startIndex = message.indexOf(errorMarker) + errorMarker.length;
       message = message.substring(startIndex);
     }
-    enqueueSnackbar({message, variant: "error", anchorOrigin: {vertical: "top", horizontal: "center"}, autoHideDuration: 2000});
+
+    toast.error(message, {
+      position: "top-right",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "colored",
+      });
   }
 
   return (
     <ThemeProvider theme={darkTheme}>
-        <SnackbarProvider/>
-          <Paper style={{ height: "100vh", borderRadius: 0 }}>
-            {(directorySelection === undefined
-              ? (<StartPage onDirectorySelected={setDirectorySelection} handleError={showErrorMessage} fileManager={proxyFileManager}/>)
-              : <SortPage workingDirectory={directorySelection} handleError={showErrorMessage} goHome={() => setDirectorySelection(undefined)} fileManager={proxyFileManager}></SortPage>)}
-          </Paper>
-      </ThemeProvider>
+      <ToastContainer/>
+      <Paper style={{ height: "100vh", borderRadius: 0 }}>
+        {(directorySelection === undefined
+          ? (<StartPage onDirectorySelected={setDirectorySelection} handleError={showErrorMessage} fileManager={proxyFileManager}/>)
+          : <SortPage workingDirectory={directorySelection} handleError={showErrorMessage} goHome={() => setDirectorySelection(undefined)} fileManager={proxyFileManager}></SortPage>)}
+      </Paper>
+    </ThemeProvider>
   );
 }
