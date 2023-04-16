@@ -108,6 +108,7 @@ export class FileManager implements IFileManager {
 
         async function getInfoIfFile(entryName: string): Promise<FileReference | undefined> {
             const entryAbsolutePath = workingDirectoryAbsolutePath + "/" + entryName;
+            // TODO is it possible to show only image files?
             if ((await fs.stat(entryAbsolutePath)).isFile()) {
                 return ({
                     originalName: entryName,
