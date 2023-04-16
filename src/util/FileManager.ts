@@ -3,6 +3,10 @@ import { Category, IFileManager, FileReference, MoveFileRequest, NextFileRespons
 import * as fs from 'node:fs/promises';
 import * as fsExtra from 'fs-extra';
 
+function IsDefined<T>(value: T | undefined): value is T {
+    return value !== undefined;
+}
+
 export class FileManager implements IFileManager {
 
     private lastOpenedDirectoryPath: string | undefined = undefined;
@@ -23,11 +27,15 @@ export class FileManager implements IFileManager {
         }
         const directoryAbsolutePath = result.filePaths[0];
         this.lastOpenedDirectoryPath = directoryAbsolutePath;
-        var categories = await this.readCategories(directoryAbsolutePath);
+        try {
+            var categories = await this.readCategories(directoryAbsolutePath);
+        } catch (e) {
+            throw new Error(`Error reading subdirectories in directory ${directoryAbsolutePath}: e.message`);
+        }
 
         return { workingDirectoryAbsolutePath: directoryAbsolutePath, existingCategories: categories };
-
     }
+
     public async getNextFileAndFileCount(workingDirectoryAbsolutePath: string): Promise<NextFileResponse> {
         try {
             var files = await this.getFiles(workingDirectoryAbsolutePath);
@@ -77,38 +85,39 @@ export class FileManager implements IFileManager {
     private async readCategories(workingDirectoryAbsolutePath: string, maxRecursionDepth = 3): Promise<Category[]> {
         const results: Category[] = [];
         const entries = await fs.readdir(workingDirectoryAbsolutePath);
-        for (const entryName of entries) {
-            const entryAbsolutePath = workingDirectoryAbsolutePath + "/" + entryName;
-            // TODO parallelize this?
-            if ((await fs.stat(entryAbsolutePath)).isDirectory()) {
-                results.push({
-                    name: entryName,
-                    absolutePath: entryAbsolutePath,
-                });
-                if (maxRecursionDepth > 0) {
-                    const subcategories = await this.readCategories(entryAbsolutePath, maxRecursionDepth - 1);
-                    results.push(...subcategories.map(c => ({ name: entryName + "/" + c.name, absolutePath: c.absolutePath })));
-                }
-            }
+        return (await Promise.all(entries.map(entry => this.getCategoriesFromChild(entry, workingDirectoryAbsolutePath, maxRecursionDepth)))).flat();
+    }
+
+    private async getCategoriesFromChild(entryName: string, workingDirectoryAbsolutePath: string, maxRecursionDepth: number): Promise<Category[]> {
+        const entryAbsolutePath = workingDirectoryAbsolutePath + "/" + entryName;
+        if (!(await fs.stat(entryAbsolutePath)).isDirectory()) {
+            return []
         }
 
+        const results: Category[] = [{ name: entryName, absolutePath: entryAbsolutePath }];
+        if (maxRecursionDepth > 0) {
+            const subcategories = await this.readCategories(entryAbsolutePath, maxRecursionDepth - 1);
+            results.push(...subcategories.map(c => ({ name: entryName + "/" + c.name, absolutePath: c.absolutePath })));
+        }
         return results;
     }
 
     private async getFiles(workingDirectoryAbsolutePath: string): Promise<FileReference[]> {
         const results: FileReference[] = [];
         const entries = await fs.readdir(workingDirectoryAbsolutePath);
-        for (const entryName of entries) {
+
+        async function getInfoIfFile(entryName: string): Promise<FileReference | undefined> {
             const entryAbsolutePath = workingDirectoryAbsolutePath + "/" + entryName;
-            // TODO parallelize this?
             if ((await fs.stat(entryAbsolutePath)).isFile()) {
-                results.push({
+                return ({
                     originalName: entryName,
                     absolutePath: entryAbsolutePath,
                 });
+            } else {
+                return undefined;
             }
         }
 
-        return results;
+        return (await Promise.all(entries.map(getInfoIfFile))).filter(IsDefined);
     }
 }
