@@ -25,9 +25,16 @@ export function RootPage(): JSX.Element {
 
   console.log(directorySelection);
 
+  // TODO error popup should use sans-serif font
   function showErrorMessage(error: unknown): void {
     console.error(error);
     var message = error instanceof Error ? error.message : `${error}`;
+
+    if (message.startsWith("Error invoking remote method")) {
+      const errorMarker = "Error: ";
+      var startIndex = message.indexOf(errorMarker) + errorMarker.length;
+      message = message.substring(startIndex);
+    }
     enqueueSnackbar({message, variant: "error", anchorOrigin: {vertical: "top", horizontal: "center"}, autoHideDuration: 2000});
   }
 

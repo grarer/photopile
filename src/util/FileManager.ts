@@ -25,15 +25,19 @@ export class FileManager implements IFileManager {
         this.lastOpenedDirectoryPath = directoryAbsolutePath;
         var categories = await this.readCategories(directoryAbsolutePath);
 
-        return {workingDirectoryAbsolutePath: directoryAbsolutePath, existingCategories: categories};
+        return { workingDirectoryAbsolutePath: directoryAbsolutePath, existingCategories: categories };
 
     }
     public async getNextFileAndFileCount(workingDirectoryAbsolutePath: string): Promise<NextFileResponse> {
-        var files = await this.getFiles(workingDirectoryAbsolutePath);
-        if (files.length === 0) {
-            return {nextFile: null, totalFileCount: 0};
+        try {
+            var files = await this.getFiles(workingDirectoryAbsolutePath);
+            if (files.length === 0) {
+                return { nextFile: null, totalFileCount: 0 };
+            }
+            return { nextFile: files[0], totalFileCount: files.length };
+        } catch (e) {
+            throw new Error(`Error reading files in directory ${workingDirectoryAbsolutePath}: e.message`);
         }
-        return {nextFile: files[0], totalFileCount: files.length};
     }
 
     public async moveFile(request: MoveFileRequest): Promise<void> {
@@ -48,16 +52,25 @@ export class FileManager implements IFileManager {
             throw new Error(`Destination file path ${newAbsolutePath} is not in the opened directory ${this.lastOpenedDirectoryPath}`);
         }
 
-        // create the destination directory if it doesn't exist
-        await fs.mkdir(destinationFolder, { recursive: true });
+        try {
+            // create the destination directory if it doesn't exist
+            await fs.mkdir(destinationFolder, { recursive: true });
+        } catch (e) {
+            console.error("Error creating destination directory");
+            console.error(e);
+            throw new Error(`Error: unable to create destination directory ${destinationFolder}`);
+        }
 
         try {
             await fsExtra.move(oldAbsolutePath, newAbsolutePath, { overwrite: false });
         } catch (e) {
+            console.error("Error renaming file");
+            console.error(e);
             if (e instanceof Error && e.message.includes("dest already exists")) {
-                throw new Error(`File named ${request.newFileName} already exists in category ${request.category.name}`);
+                throw new Error(`File named "${request.newFileName}" already exists in category "${request.category.name}"`);
             }
-            throw e;
+            
+            throw new Error(`Error: unable to move file to ${newAbsolutePath}}`);
         }
     }
 

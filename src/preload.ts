@@ -1,9 +1,5 @@
 // See the Electron documentation for details on how to use preload scripts:
-import { ChannelNames, IFileManager, MoveFileRequest, NextFileResponse, SelectedDirectoryResponse, windowFileManagerKey } from './model';
-import { FileManager } from './util/FileManager';
-
-
-
+import { ChannelNames, IFileManager, MoveFileRequest, windowFileManagerKey } from './model';
 
 // https://www.electronjs.org/docs/latest/tutorial/process-model#preload-scripts
 const { contextBridge, ipcRenderer } = require('electron')
