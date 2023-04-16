@@ -1,5 +1,5 @@
 import * as ReactDOMClient from 'react-dom/client';
-import { RootPage } from './ui/root';
+import { RootPage, RootWrapper } from './ui/root';
 
 /**
  * This file will automatically be loaded by webpack and run in the "renderer" context.
@@ -30,4 +30,4 @@ import { RootPage } from './ui/root';
  */
 
 
-const root = ReactDOMClient.createRoot(document.getElementById('root')!).render(RootPage());
+const root = ReactDOMClient.createRoot(document.getElementById('root')!).render(RootWrapper());

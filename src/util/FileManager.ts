@@ -1,8 +1,8 @@
 import { dialog } from "electron";
-import { Category, FileAccessAPI, FileReference, MoveFileRequest, NextFileResponse, SelectedDirectoryResponse } from "../model";
+import { Category, IFileManager, FileReference, MoveFileRequest, NextFileResponse, SelectedDirectoryResponse } from "../model";
 import * as fs from 'node:fs/promises';
 
-export class FileManager implements FileAccessAPI {
+export class FileManager implements IFileManager {
     public async getSelectedDirectoryAndExistingCategories(): Promise<SelectedDirectoryResponse> {
 
         // get the user's selected directory
@@ -65,6 +65,7 @@ export class FileManager implements FileAccessAPI {
             if ((await fs.stat(entryAbsolutePath)).isFile()) {
                 results.push({
                     originalName: entryName,
+                    absolutePath: entryAbsolutePath,
                 });
             }
         }

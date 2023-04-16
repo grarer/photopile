@@ -11,6 +11,7 @@ export type SelectedDirectoryResponse = {
 // TODO include a way to display the file contents
 export type FileReference = {
     originalName: string,
+    absolutePath: string,
 }
 
 export type NextFileResponse = {
@@ -28,7 +29,7 @@ export type MoveFileRequest = {
     category: Category,
 }
 
-export interface FileAccessAPI {
+export interface IFileManager {
     getSelectedDirectoryAndExistingCategories(): Promise<SelectedDirectoryResponse>,
     getNextFileAndFileCount(workingDirectoryAbsolutePath: string): Promise<NextFileResponse>
     moveFile(request: MoveFileRequest): Promise<void>,
@@ -41,3 +42,5 @@ export const ChannelNames = {
 }
 
 export const windowFileManagerKey = "fileManager" as const;
+
+export type ErrorHandler = (error: unknown) => void
