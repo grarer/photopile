@@ -124,7 +124,7 @@ export function MoveInput(props: {
                     renderInput={(params) => (
                         <TextField {...params} label="Move To Category Folder"
                             onKeyDown={(event) => {
-                                if (event.key === "Tab" && autocompleteRawInput) {
+                                if (event.key === "Tab" && autocompleteRawInput && !(autocompleteRawInput === autocompleteSelection?.title)) {
                                     var suggestions: OptionType[] = getSuggestions(autocompleteRawInput, existingOptions);
                                     var suggestion: OptionType | undefined = suggestions[0];
                                     if (suggestion) {
