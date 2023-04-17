@@ -31,6 +31,7 @@ export function MoveInput(props: {
     const [name, setName] = useState<string>(initialFileLabel);
     const [autocompleteSelection, setAutocompleteSelection] = useState<OptionType | null>(null);
     const [autocompleteRawInput, setAutocompleteRawInput] = useState<string>("");
+    const [highlight, setHighlight] = useState<OptionType | null>(null);
 
     var currentFileNumber = props.filesMovedCount + 1;
     var totalFileCount = props.filesMovedCount + props.totalUnsortedFiles;
@@ -121,15 +122,30 @@ export function MoveInput(props: {
                     sx={{ width: 300 }}
                     freeSolo
                     onInputChange={(event, newInputValue) => { setAutocompleteRawInput(newInputValue) }}
+                    onHighlightChange={(event, newHighlight) => setHighlight(newHighlight)}
                     renderInput={(params) => (
                         <TextField {...params} label="Move To Category Folder"
                             onKeyDown={(event) => {
-                                if (event.key === "Tab" && autocompleteRawInput && !(autocompleteRawInput === autocompleteSelection?.title)) {
-                                    var suggestions: OptionType[] = getSuggestions(autocompleteRawInput, existingOptions);
-                                    var suggestion: OptionType | undefined = suggestions[0];
-                                    if (suggestion) {
-                                        var suggestionValue = suggestion.inputValue ?? suggestion.title;
-                                        setAutocompleteSelection({ title: suggestionValue });
+                                if (event.key === "Tab" && autocompleteRawInput) {
+                                    if (highlight) {
+                                        var selectedCategory = highlight.inputValue ? { title: highlight.inputValue } : highlight;
+                                        setAutocompleteSelection(selectedCategory);
+                                        return;
+                                    } else {
+                                        var matchingOptions = getSuggestions(autocompleteRawInput, existingOptions);
+                                        var nonAddMatchingOptions = matchingOptions.filter(o => o.inputValue == null);
+                                        var topLevelOptions = nonAddMatchingOptions.filter(o => o.title.indexOf("/") == -1);
+                                        var addOption = matchingOptions.find(o => o.inputValue != null);
+                                        if (nonAddMatchingOptions.length === 1) {
+                                            setAutocompleteSelection(nonAddMatchingOptions[0]);
+                                            return;
+                                        } else if (matchingOptions.length === 1 && addOption != null && addOption.inputValue != null) {
+                                            setAutocompleteSelection({title: addOption.inputValue});
+                                            return;
+                                        } else if (topLevelOptions.length === 1) {
+                                            setAutocompleteSelection(topLevelOptions[0]);
+                                            return;
+                                        }
                                     }
                                 }
                             }} />
