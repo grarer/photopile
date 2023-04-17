@@ -2,6 +2,7 @@ import { dialog } from "electron";
 import { Category, IFileManager, FileReference, MoveFileRequest, NextFileResponse, SelectedDirectoryResponse } from "../model";
 import * as fs from 'node:fs/promises';
 import * as fsExtra from 'fs-extra';
+import { matchesSupportedExtension } from "./ImageExtensions";
 
 function IsDefined<T>(value: T | undefined): value is T {
     return value !== undefined;
@@ -109,7 +110,7 @@ export class FileManager implements IFileManager {
         async function getInfoIfFile(entryName: string): Promise<FileReference | undefined> {
             const entryAbsolutePath = workingDirectoryAbsolutePath + "/" + entryName;
             // TODO is it possible to show only image files?
-            if ((await fs.stat(entryAbsolutePath)).isFile()) {
+            if (matchesSupportedExtension(entryAbsolutePath) && (await fs.stat(entryAbsolutePath)).isFile()) {
                 return ({
                     originalName: entryName,
                     absolutePath: entryAbsolutePath,
