@@ -63,7 +63,7 @@ export function SortPage(props: {
     } else if (currentImageState.state == "none") {
         return <div style={{display: "flex", flexDirection: "column", alignItems: "center", padding: "10px"}}>
             <Typography variant="subtitle1">No files remaining.</Typography>
-            <Button variant="contained" size="large" endIcon={<ArrowBackIcon />} onClick={() => props.goHome()}>Back To Home</Button>
+            <Button variant="contained" size="large" startIcon={<ArrowBackIcon />} onClick={() => props.goHome()}>Back to Folder Selection</Button>
         </div>
     }
 
