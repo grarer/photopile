@@ -22,7 +22,7 @@ const createWindow = (): void => {
       preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
     },
     autoHideMenuBar: true,
-    icon: '/images/icon.png'
+    icon: '/assets/icon.png'
   });
   mainWindow.removeMenu();
 

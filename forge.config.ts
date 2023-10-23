@@ -8,16 +8,18 @@ import { WebpackPlugin } from '@electron-forge/plugin-webpack';
 import { mainConfig } from './webpack.main.config';
 import { rendererConfig } from './webpack.renderer.config';
 
+const iconPath = 'assets/icon'; // no file extension required
+
 const config: ForgeConfig = {
   packagerConfig: {
-    icon: 'assets/icon' // no file extension required
+    icon: iconPath
   },
   rebuildConfig: {},
   makers: [
     new MakerSquirrel({}),
     new MakerZIP({}, ['darwin']),
-    new MakerRpm({}),
-    new MakerDeb({})],
+    new MakerRpm({ options: {icon: iconPath} }),
+    new MakerDeb({ options: {icon: iconPath} })],
   plugins: [
     new WebpackPlugin({
       devContentSecurityPolicy: "default-src 'self' 'unsafe-inline' data:; script-src 'self' 'unsafe-eval' 'unsafe-inline' data:; img-src 'self' data: pilefile:",
