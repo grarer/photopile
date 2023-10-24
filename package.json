@@ -2,7 +2,7 @@
   "name": "photopile",
   "productName": "photopile",
   "version": "1.0.0",
-  "description": "My Electron application description",
+  "description": "An app for quickly sorting image files into categories",
   "main": ".webpack/main",
   "scripts": {
     "start": "electron-forge start",
