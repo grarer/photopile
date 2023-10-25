@@ -9,7 +9,7 @@ import { mainConfig } from './webpack.main.config';
 import { rendererConfig } from './webpack.renderer.config';
 
 const iconPath = 'assets/icon'; // no file extension required
-
+const iconPathPNG = iconPath + ".png";
 const config: ForgeConfig = {
   packagerConfig: {
     icon: iconPath
@@ -18,8 +18,8 @@ const config: ForgeConfig = {
   makers: [
     new MakerSquirrel({}),
     new MakerZIP({}, ['darwin']),
-    new MakerRpm({ options: {icon: iconPath} }),
-    new MakerDeb({ options: {icon: iconPath} })],
+    new MakerRpm({ options: {icon: iconPathPNG} }),
+    new MakerDeb({ options: {icon: iconPathPNG} })],
   plugins: [
     new WebpackPlugin({
       devContentSecurityPolicy: "default-src 'self' 'unsafe-inline' data:; script-src 'self' 'unsafe-eval' 'unsafe-inline' data:; img-src 'self' data: pilefile:",
