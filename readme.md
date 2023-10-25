@@ -1,11 +1,10 @@
 # photopile
 
-Photopile is an app I made to help sort all the images and memes on my compute. Open a folder of images in Photopile, and you can quickly rename and sort them into categories.
+Photopile is an app I made to help sort all the images and memes on my compute. Open a folder of images in Photopile, and you can quickly rename files and sort them into categories.
 
 <img src="./assets/readme_screenshot.png" width="50%">
 
-Photopile is an Electron app made using React and Electron-Forge. To use it, clone the repo and run `npm run make` to generate an installer for your platform.
-
+Photopile is an Electron app made using React and Electron-Forge. [Installers are available for Windows, Ubuntu/Debian, and RPM](https://github.com/GRarer/photopile/releases).
 # categories
 
 A "category" in photopile is a folder that an file will be moved to. Categories can be hierarchical, e.g. `animals` and `animals/owls`. The category selection box will autosuggest any already-existing folders and subfolders of your selected directory.
