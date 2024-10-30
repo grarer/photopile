@@ -1,6 +1,6 @@
 # photopile
 
-Photopile is an app I made to help sort all the images and memes on my compute. Open a folder of images in Photopile, and you can quickly rename files and sort them into categories.
+Photopile is an app I made to help sort all the images and memes on my computer. Open a folder of images in Photopile, and you can quickly rename files and sort them into categories.
 
 <img src="./assets/readme_screenshot.png" width="50%">
 
